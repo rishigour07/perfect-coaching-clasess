@@ -22,7 +22,7 @@ export default function Results() {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
-  
+
   const sortedResults = [...dynamicResults].sort((a, b) => {
     const aScore = parseFloat(a.marks.replace('%', '')) || 0;
     const bScore = parseFloat(b.marks.replace('%', '')) || 0;
@@ -133,11 +133,11 @@ export default function Results() {
                   <div className="absolute top-4 right-4 bg-sky-900 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
                     {topper.percentage}
                   </div>
-                  
+
                   {topper.photo && (
                     <img src={topper.photo} alt={topper.name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover bg-white" />
                   )}
-                  
+
                   <h3 className="text-xl font-bold text-black">{topper.name}</h3>
                   <p className="text-sm text-gray-600">Top Achiever 2024-25</p>
                 </div>
@@ -209,7 +209,7 @@ export default function Results() {
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-gradient-to-r from-sky-900 to-sky-950 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">b
             Be the Next Success Story!
           </h2>
           <p className="text-lg mb-8 opacity-90">
