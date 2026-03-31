@@ -209,7 +209,7 @@ export default function Results() {
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-gradient-to-r from-sky-900 to-sky-950 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">b
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Be the Next Success Story!
           </h2>
           <p className="text-lg mb-8 opacity-90">
