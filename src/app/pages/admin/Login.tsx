@@ -82,11 +82,6 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="mt-8 text-center text-xs text-gray-400">
-          <p>Demo Credentials:</p>
-          <p className="mt-1">Email: <span className="font-mono bg-gray-100 px-1 py-0.5 rounded text-gray-600">admin@perfectcoaching.com</span></p>
-          <p>Password: <span className="font-mono bg-gray-100 px-1 py-0.5 rounded text-gray-600">admin123</span></p>
-        </div>
       </div>
     </div>
   );
