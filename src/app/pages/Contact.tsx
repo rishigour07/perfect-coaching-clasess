@@ -51,6 +51,9 @@ export default function Contact() {
         template_id: emailJsConfig.templateId,
         user_id: emailJsConfig.publicKey,
         template_params: {
+          to_email: emailJsConfig.ownerEmail,
+          from_name: formData.name,
+          reply_to: emailJsConfig.ownerEmail,
           student_name: formData.name,
           phone_number: formData.phone,
           class_name: formData.class,
@@ -72,10 +75,19 @@ export default function Contact() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ EmailJS Error Response:", errorData);
+        const rawError = await response.text();
+        let parsedError: { message?: string } | null = null;
+
+        try {
+          parsedError = JSON.parse(rawError) as { message?: string };
+        } catch {
+          parsedError = null;
+        }
+
+        console.error("❌ EmailJS Error Response:", rawError);
+
         throw new Error(
-          errorData?.message || `EmailJS API error: ${response.status}`
+          parsedError?.message || rawError || `EmailJS API error: ${response.status}`
         );
       }
 
