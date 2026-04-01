@@ -12,6 +12,15 @@ export default function Contact() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const emailJsConfig = {
+    serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+    templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+    publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+    ownerEmail: import.meta.env.VITE_OWNER_EMAIL || "perfectcoachings0@gmail.com",
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -20,15 +29,49 @@ export default function Contact() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, this would send data to a backend
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setSubmitted(false);
+    setSubmitError("");
+
+    if (!emailJsConfig.serviceId || !emailJsConfig.templateId || !emailJsConfig.publicKey) {
+      setSubmitError("Email service is not configured. Please contact the site owner.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const submittedAt = new Date().toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
+      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          service_id: emailJsConfig.serviceId,
+          template_id: emailJsConfig.templateId,
+          user_id: emailJsConfig.publicKey,
+          template_params: {
+            student_name: formData.name,
+            phone_number: formData.phone,
+            class_name: formData.class,
+            subject_interest: formData.subject || "Not specified",
+            message: formData.message || "No additional message",
+            owner_email: emailJsConfig.ownerEmail,
+            submitted_at: submittedAt,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send inquiry email");
+      }
+
+      setSubmitted(true);
       setFormData({
         name: "",
         phone: "",
@@ -36,7 +79,16 @@ export default function Contact() {
         subject: "",
         message: "",
       });
-    }, 3000);
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+    } catch (error) {
+      console.error("EmailJS submit failed", error);
+      setSubmitError("Failed to submit enquiry. Please try again or call us directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -63,6 +115,21 @@ export default function Contact() {
       title: "Location",
       content: "Near Main Market, Madhya Pradesh, India",
       link: "https://share.google/wWs9dAG9ijMzuYVqX",
+    },
+  ];
+
+  const coachingClassPhotos = [
+    {
+      src: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+      alt: "Teacher explaining concepts in a coaching classroom",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1080&q=80",
+      alt: "Students studying and taking notes",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1080&q=80",
+      alt: "Coaching students learning together",
     },
   ];
 
@@ -197,10 +264,15 @@ export default function Contact() {
                     {/* Submit Button */}
                     <button
                       type="submit"
-                      className="w-full bg-sky-900 hover:bg-sky-950 text-white py-4 rounded-lg font-semibold text-lg transition-all hover:scale-105 flex items-center justify-center gap-2"
+                      disabled={isSubmitting}
+                      className="w-full bg-sky-900 hover:bg-sky-950 disabled:bg-sky-700 disabled:cursor-not-allowed text-white py-4 rounded-lg font-semibold text-lg transition-all hover:scale-105 flex items-center justify-center gap-2"
                     >
-                      Submit Inquiry <Send size={20} />
+                      {isSubmitting ? "Sending..." : "Submit Inquiry"} <Send size={20} />
                     </button>
+
+                    {submitError && (
+                      <p className="text-sm text-red-600 text-center">{submitError}</p>
+                    )}
 
                     <p className="text-sm text-gray-500 text-center">
                       We typically respond within 24 hours
@@ -212,13 +284,29 @@ export default function Contact() {
 
             {/* Contact Information & Image */}
             <div className="space-y-8">
-              {/* Image */}
-              <div className="rounded-2xl overflow-hidden shadow-xl">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1774437789880-112a40b24ade?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGluZGlhbiUyMHN0dWRlbnRzJTIwc3VjY2Vzc3xlbnwxfHx8fDE3NzQ3NzU0ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Contact Perfect Coaching Classes"
-                  className="w-full h-[300px] object-cover"
-                />
+              {/* Coaching Class Photos */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 rounded-2xl overflow-hidden shadow-xl">
+                  <ImageWithFallback
+                    src={coachingClassPhotos[0].src}
+                    alt={coachingClassPhotos[0].alt}
+                    className="w-full h-[220px] object-cover"
+                  />
+                </div>
+                <div className="rounded-2xl overflow-hidden shadow-xl">
+                  <ImageWithFallback
+                    src={coachingClassPhotos[1].src}
+                    alt={coachingClassPhotos[1].alt}
+                    className="w-full h-[160px] object-cover"
+                  />
+                </div>
+                <div className="rounded-2xl overflow-hidden shadow-xl">
+                  <ImageWithFallback
+                    src={coachingClassPhotos[2].src}
+                    alt={coachingClassPhotos[2].alt}
+                    className="w-full h-[160px] object-cover"
+                  />
+                </div>
               </div>
 
               {/* Contact Cards */}

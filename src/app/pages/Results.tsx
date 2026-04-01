@@ -40,8 +40,17 @@ export default function Results() {
   const statistics = [
     { label: "Average Success Rate", value: "95%+", icon: TrendingUp },
     { label: "Students Scoring 90%+", value: "50+", icon: Award },
-    { label: "Top Scorers (95%+)", value: "25+", icon: Star },
+    { label: "Top Scorers (95%+)", value: "25+", icon: Award },
     { label: "Student Satisfaction", value: "98%", icon: Award },
+  ];
+
+  const successGalleryImages = [
+    "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1080&q=80",
+    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1080&q=80",
+    "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1080&q=80",
+    "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1080&q=80",
+    "https://images.unsplash.com/photo-1497486751825-1233686d5d80?auto=format&fit=crop&w=1080&q=80",
+    "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1080&q=80",
   ];
 
   return (
@@ -118,10 +127,10 @@ export default function Results() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((_, index) => (
+            {successGalleryImages.map((imageUrl, index) => (
               <div key={index} className="aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all hover:scale-105">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1767595789539-cd012af80914?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncmFkdWF0aW9uJTIwY2VsZWJyYXRpb24lMjBzdWNjZXNzfGVufDF8fHx8MTc3NDY3OTY2OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src={imageUrl}
                   alt={`Success moment ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
