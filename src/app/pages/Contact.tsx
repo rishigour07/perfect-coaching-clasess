@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, MessageCircle, Send, CheckCircle } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import emailjs from "@emailjs/browser";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -46,50 +47,29 @@ export default function Contact() {
         timeStyle: "short",
       });
 
-      const requestPayload = {
-        service_id: emailJsConfig.serviceId,
-        template_id: emailJsConfig.templateId,
-        user_id: emailJsConfig.publicKey,
-        template_params: {
-          to_email: emailJsConfig.ownerEmail,
-          from_name: formData.name,
-          reply_to: emailJsConfig.ownerEmail,
-          student_name: formData.name,
-          phone_number: formData.phone,
-          class_name: formData.class,
-          subject_interest: formData.subject || "Not specified",
-          message: formData.message || "No additional message",
-          owner_email: emailJsConfig.ownerEmail,
-          submitted_at: submittedAt,
-        },
+      const templateParams = {
+        to_email: emailJsConfig.ownerEmail,
+        from_name: formData.name,
+        reply_to: emailJsConfig.ownerEmail,
+        student_name: formData.name,
+        phone_number: formData.phone,
+        class_name: formData.class,
+        subject_interest: formData.subject || "Not specified",
+        message: formData.message || "No additional message",
+        owner_email: emailJsConfig.ownerEmail,
+        submitted_at: submittedAt,
       };
 
-      console.log("📧 EmailJS Request Payload:", requestPayload);
+      console.log("📧 EmailJS Template Params:", templateParams);
 
-      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestPayload),
-      });
-
-      if (!response.ok) {
-        const rawError = await response.text();
-        let parsedError: { message?: string } | null = null;
-
-        try {
-          parsedError = JSON.parse(rawError) as { message?: string };
-        } catch {
-          parsedError = null;
+      await emailjs.send(
+        emailJsConfig.serviceId,
+        emailJsConfig.templateId,
+        templateParams,
+        {
+          publicKey: emailJsConfig.publicKey,
         }
-
-        console.error("❌ EmailJS Error Response:", rawError);
-
-        throw new Error(
-          parsedError?.message || rawError || `EmailJS API error: ${response.status}`
-        );
-      }
+      );
 
       setSubmitted(true);
       setFormData({
@@ -105,7 +85,15 @@ export default function Contact() {
       }, 3000);
     } catch (error) {
       console.error("EmailJS submit failed", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to submit enquiry. Please try again or call us directly.";
+      const errorText =
+        typeof error === "object" && error !== null && "text" in error
+          ? String((error as { text?: unknown }).text)
+          : null;
+      const errorMessage =
+        errorText ||
+        (error instanceof Error
+          ? error.message
+          : "Failed to submit enquiry. Please try again or call us directly.");
       setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
