@@ -46,29 +46,37 @@ export default function Contact() {
         timeStyle: "short",
       });
 
+      const requestPayload = {
+        service_id: emailJsConfig.serviceId,
+        template_id: emailJsConfig.templateId,
+        user_id: emailJsConfig.publicKey,
+        template_params: {
+          student_name: formData.name,
+          phone_number: formData.phone,
+          class_name: formData.class,
+          subject_interest: formData.subject || "Not specified",
+          message: formData.message || "No additional message",
+          owner_email: emailJsConfig.ownerEmail,
+          submitted_at: submittedAt,
+        },
+      };
+
+      console.log("📧 EmailJS Request Payload:", requestPayload);
+
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          service_id: emailJsConfig.serviceId,
-          template_id: emailJsConfig.templateId,
-          user_id: emailJsConfig.publicKey,
-          template_params: {
-            student_name: formData.name,
-            phone_number: formData.phone,
-            class_name: formData.class,
-            subject_interest: formData.subject || "Not specified",
-            message: formData.message || "No additional message",
-            owner_email: emailJsConfig.ownerEmail,
-            submitted_at: submittedAt,
-          },
-        }),
+        body: JSON.stringify(requestPayload),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send inquiry email");
+        const errorData = await response.json();
+        console.error("❌ EmailJS Error Response:", errorData);
+        throw new Error(
+          errorData?.message || `EmailJS API error: ${response.status}`
+        );
       }
 
       setSubmitted(true);
@@ -85,7 +93,8 @@ export default function Contact() {
       }, 3000);
     } catch (error) {
       console.error("EmailJS submit failed", error);
-      setSubmitError("Failed to submit enquiry. Please try again or call us directly.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit enquiry. Please try again or call us directly.";
+      setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
