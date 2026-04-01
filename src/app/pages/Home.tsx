@@ -1,8 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Phone, ArrowRight, CheckCircle, Users, Award, BookOpen, GraduationCap, TrendingUp } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { AchieversSection } from "../components/AchieversSection";
+import { getMockResults } from "../utils/mockDb";
+import { StudentResult } from "./admin/ResultsManager";
 export default function Home() {
+  const [studentResults, setStudentResults] = useState<StudentResult[]>([]);
+
+  useEffect(() => {
+    const syncResults = () => setStudentResults(getMockResults());
+
+    syncResults();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "perfect_coaching_mock_results") {
+        syncResults();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const courses = [
     {
       title: "Class 11th Commerce",
@@ -63,29 +83,9 @@ export default function Home() {
     },
   ];
 
-  const testimonials = [
-    {
-      name: "Priya Sharma",
-      class: "Class 12th - 2025",
-      score: "95%",
-      text: "Perfect Coaching helped me achieve excellent results. The teachers are very supportive!",
-      image: "https://images.unsplash.com/photo-1774437789880-112a40b24ade?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGluZGlhbiUyMHN0dWRlbnRzJTIwc3VjY2Vzc3xlbnwxfHx8fDE3NzQ3NzU0ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      name: "Rahul Verma",
-      class: "Class 11th - 2026",
-      score: "92%",
-      text: "Best coaching for Commerce students. Clear concepts and regular practice tests.",
-      image: "https://images.unsplash.com/photo-1774437789880-112a40b24ade?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGluZGlhbiUyMHN0dWRlbnRzJTIwc3VjY2Vzc3xlbnwxfHx8fDE3NzQ3NzU0ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-    {
-      name: "Anjali Patel",
-      class: "Class 12th - 2025",
-      score: "97%",
-      text: "Excellent teaching methodology and individual attention. Highly recommended!",
-      image: "https://images.unsplash.com/photo-1774437789880-112a40b24ade?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGluZGlhbiUyMHN0dWRlbnRzJTIwc3VjY2Vzc3xlbnwxfHx8fDE3NzQ3NzU0ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    },
-  ];
+  const topResults = [...studentResults]
+    .sort((a, b) => (parseFloat(b.marks) || 0) - (parseFloat(a.marks) || 0))
+    .slice(0, 3);
 
   return (
     <div className="w-full">
@@ -293,7 +293,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Student Success Stories */}
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -301,25 +301,33 @@ export default function Home() {
             <p className="text-lg text-gray-600">Hear from our successful students</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white border-2 border-gray-100 rounded-xl p-6 hover:border-slate-500 transition-all">
-                <div className="flex items-center gap-4 mb-4">
-                  <ImageWithFallback
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-bold text-black">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.class}</p>
-                    <p className="text-sm font-bold text-sky-900">{testimonial.score}</p>
+          {topResults.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              {topResults.map((result) => (
+                <div key={result.id} className="bg-white border-2 border-gray-100 rounded-xl p-6 hover:border-slate-500 transition-all">
+                  <div className="flex items-center gap-4 mb-4">
+                    {result.photo ? (
+                      <img src={result.photo} alt={result.name} className="w-16 h-16 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-sky-100 text-sky-900 flex items-center justify-center text-xl font-bold">
+                        {result.name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-bold text-black">{result.name}</h4>
+                      <p className="text-sm text-gray-600">Class {result.className} - {result.year}</p>
+                      <p className="text-sm font-bold text-sky-900">{result.marks}</p>
+                    </div>
                   </div>
+                  <p className="text-gray-600 italic">Subject: {result.subject}</p>
                 </div>
-                <p className="text-gray-600 italic">"{testimonial.text}"</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 border border-dashed border-gray-300 rounded-xl">
+              <p className="text-gray-600">No student results added yet.</p>
+            </div>
+          )}
 
           <div className="text-center mt-8">
             <Link

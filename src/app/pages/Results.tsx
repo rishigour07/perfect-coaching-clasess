@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Award, TrendingUp, Star, Quote, ArrowRight } from "lucide-react";
+import { Award, TrendingUp, ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { getMockResults } from "../utils/mockDb";
 import { StudentResult } from "./admin/ResultsManager";
@@ -36,44 +36,6 @@ export default function Results() {
     id: res.id
   }));
 
-  const testimonials = [
-    {
-      name: "Mrs. Sharma",
-      relation: "Parent of Priya Sharma",
-      text: "The best decision we made was enrolling our daughter at Perfect Coaching. The faculty is dedicated and the results speak for themselves. Our daughter scored 97.8% in her boards!",
-      rating: 5,
-    },
-    {
-      name: "Mr. Verma",
-      relation: "Parent of Rahul Verma",
-      text: "Excellent coaching with personal attention to every student. The flexible payment option also helped us manage the fees easily. Highly recommended for Commerce students.",
-      rating: 5,
-    },
-    {
-      name: "Riya Patel",
-      relation: "Class 11th Student",
-      text: "I was weak in Accounts, but the teachers here explained concepts so clearly that it became my favorite subject. The study material is comprehensive and easy to understand.",
-      rating: 5,
-    },
-    {
-      name: "Vikram Singh",
-      relation: "Class 12th Student",
-      text: "Mock tests and regular assessments helped me identify my weak areas and improve continuously. The teaching methodology is result-oriented and very effective.",
-      rating: 5,
-    },
-    {
-      name: "Mrs. Gupta",
-      relation: "Parent of Neha Gupta",
-      text: "Professional institute with experienced teachers. They maintain good communication with parents and keep us updated about our child's progress regularly.",
-      rating: 5,
-    },
-    {
-      name: "Amit Kumar",
-      relation: "B.Com Student",
-      text: "Even for B.Com subjects, the coaching quality is excellent. Teachers have deep subject knowledge and practical experience. Worth every rupee!",
-      rating: 5,
-    },
-  ];
 
   const statistics = [
     { label: "Average Success Rate", value: "95%+", icon: TrendingUp },
@@ -140,43 +102,6 @@ export default function Results() {
 
                   <h3 className="text-xl font-bold text-black">{topper.name}</h3>
                   <p className="text-sm text-gray-600">Top Achiever 2024-25</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Student & Parent Testimonials */}
-      <section className="py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-              What Students & Parents Say
-            </h2>
-            <p className="text-lg text-gray-600">Testimonials from our satisfied students and parents</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all"
-              >
-                {/* Rating */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} size={20} className="text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-
-                {/* Testimonial Text */}
-                <p className="text-gray-600 mb-6 leading-relaxed">"{testimonial.text}"</p>
-
-                {/* Author */}
-                <div className="pt-4 border-t border-gray-100">
-                  <h4 className="font-bold text-black">{testimonial.name}</h4>
-                  <p className="text-sm text-gray-500">{testimonial.relation}</p>
                 </div>
               </div>
             ))}
