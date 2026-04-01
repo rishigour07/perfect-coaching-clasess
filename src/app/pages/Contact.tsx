@@ -66,9 +66,7 @@ export default function Contact() {
         emailJsConfig.serviceId,
         emailJsConfig.templateId,
         templateParams,
-        {
-          publicKey: emailJsConfig.publicKey,
-        }
+        emailJsConfig.publicKey
       );
 
       setSubmitted(true);
