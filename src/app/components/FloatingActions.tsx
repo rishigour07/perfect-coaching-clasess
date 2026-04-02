@@ -1,4 +1,5 @@
-import { Phone, MessageCircle, ArrowUp } from "lucide-react";
+import { Phone, ArrowUp } from "lucide-react";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { useState, useEffect } from "react";
 
 export default function FloatingActions() {
@@ -47,7 +48,7 @@ export default function FloatingActions() {
         className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110"
         aria-label="Contact via WhatsApp"
       >
-        <MessageCircle size={24} />
+        <WhatsAppIcon sx={{ fontSize: 24 }} />
       </a>
 
       {/* Call Button */}

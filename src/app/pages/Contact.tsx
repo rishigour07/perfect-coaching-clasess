@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, MessageCircle, Send, CheckCircle } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import emailjs from "@emailjs/browser";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,11 +15,12 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
+  const env = import.meta.env as Record<string, string | undefined>;
   const emailJsConfig = {
-    serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-    templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-    publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-    ownerEmail: import.meta.env.VITE_OWNER_EMAIL || "perfectcoachings0@gmail.com",
+    serviceId: env.VITE_EMAILJS_SERVICE_ID,
+    templateId: env.VITE_EMAILJS_TEMPLATE_ID,
+    publicKey: env.VITE_EMAILJS_PUBLIC_KEY,
+    ownerEmail: env.VITE_OWNER_EMAIL || "perfectcoachings0@gmail.com",
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -47,27 +47,30 @@ export default function Contact() {
         timeStyle: "short",
       });
 
-      const templateParams = {
-        to_email: emailJsConfig.ownerEmail,
-        from_name: formData.name,
-        reply_to: emailJsConfig.ownerEmail,
-        student_name: formData.name,
-        phone_number: formData.phone,
-        class_name: formData.class,
-        subject_interest: formData.subject || "Not specified",
-        message: formData.message || "No additional message",
-        owner_email: emailJsConfig.ownerEmail,
-        submitted_at: submittedAt,
-      };
+      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          service_id: emailJsConfig.serviceId,
+          template_id: emailJsConfig.templateId,
+          user_id: emailJsConfig.publicKey,
+          template_params: {
+            student_name: formData.name,
+            phone_number: formData.phone,
+            class_name: formData.class,
+            subject_interest: formData.subject || "Not specified",
+            message: formData.message || "No additional message",
+            owner_email: emailJsConfig.ownerEmail,
+            submitted_at: submittedAt,
+          },
+        }),
+      });
 
-      console.log("📧 EmailJS Template Params:", templateParams);
-
-      await emailjs.send(
-        emailJsConfig.serviceId,
-        emailJsConfig.templateId,
-        templateParams,
-        emailJsConfig.publicKey
-      );
+      if (!response.ok) {
+        throw new Error("Failed to send inquiry email");
+      }
 
       setSubmitted(true);
       setFormData({
@@ -83,16 +86,7 @@ export default function Contact() {
       }, 3000);
     } catch (error) {
       console.error("EmailJS submit failed", error);
-      const errorText =
-        typeof error === "object" && error !== null && "text" in error
-          ? String((error as { text?: unknown }).text)
-          : null;
-      const errorMessage =
-        errorText ||
-        (error instanceof Error
-          ? error.message
-          : "Failed to submit enquiry. Please try again or call us directly.");
-      setSubmitError(errorMessage);
+      setSubmitError("Failed to submit enquiry. Please try again or call us directly.");
     } finally {
       setIsSubmitting(false);
     }
