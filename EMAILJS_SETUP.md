@@ -13,13 +13,19 @@ Your `.env` file has been created with:
 In your EmailJS dashboard, verify your email template (`template_ebolbml`) includes these **exact** template variables:
 
 ```
+{{name}}
 {{student_name}}
+{{phone}}
 {{phone_number}}
+{{class}}
 {{class_name}}
+{{student_class}}
+{{subject}}
 {{subject_interest}}
 {{message}}
 {{owner_email}}
 {{submitted_at}}
+{{enquiry_summary}}
 ```
 
 ❌ **Common Issue**: If your template uses different variable names (e.g., `{{name}}` instead of `{{student_name}}`), the API will return a 400 error.
@@ -33,7 +39,10 @@ In your EmailJS dashboard, verify your email template (`template_ebolbml`) inclu
 <p><strong>Subject of Interest:</strong> {{subject_interest}}</p>
 <p><strong>Message:</strong> {{message}}</p>
 <p><strong>Submitted At:</strong> {{submitted_at}}</p>
+<pre>{{enquiry_summary}}</pre>
 ```
+
+If you want the safest setup, paste `{{enquiry_summary}}` into the template too. It contains every submitted field in one block, so nothing is missed even if a line above is accidentally removed.
 
 ## ✅ Debugging Steps
 

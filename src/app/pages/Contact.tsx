@@ -46,6 +46,14 @@ export default function Contact() {
         dateStyle: "medium",
         timeStyle: "short",
       });
+      const enquirySummary = [
+        `Student Name: ${formData.name}`,
+        `Phone Number: ${formData.phone}`,
+        `Class: ${formData.class || "Not specified"}`,
+        `Subject of Interest: ${formData.subject || "Not specified"}`,
+        `Message: ${formData.message || "No additional message"}`,
+        `Submitted At: ${submittedAt}`,
+      ].join("\n");
 
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
@@ -57,13 +65,19 @@ export default function Contact() {
           template_id: emailJsConfig.templateId,
           user_id: emailJsConfig.publicKey,
           template_params: {
+            name: formData.name,
             student_name: formData.name,
+            phone: formData.phone,
             phone_number: formData.phone,
+            class: formData.class,
             class_name: formData.class,
+            student_class: formData.class,
+            subject: formData.subject || "Not specified",
             subject_interest: formData.subject || "Not specified",
             message: formData.message || "No additional message",
             owner_email: emailJsConfig.ownerEmail,
             submitted_at: submittedAt,
+            enquiry_summary: enquirySummary,
           },
         }),
       });

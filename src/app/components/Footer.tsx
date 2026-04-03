@@ -99,7 +99,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-center">
           <p className="text-sm text-gray-400">
-            ©️ 2026 Company Name Pvt. Ltd. All rights reserved. | Designed & Developed by Kamkimat Technologies Pvt. Ltd.
+            ©️ 2026 Perfect Coaching Classes. All rights reserved. | Designed & Developed by Kamkimat Technologies Pvt. Ltd.
           </p>
         </div>
       </div>
